@@ -44,6 +44,7 @@ new GLTFLoader().load('models/RobotExpressive.glb', function (gltf) {
     model.traverse(function (object: any) {
         if (object.isMesh) object.castShadow = true;
     });
+    model.rotation.setFromVector3(new THREE.Vector3( 0, Math.PI, 0));
     scene.add(model);
 
     const gltfAnimations: THREE.AnimationClip[] = gltf.animations;
