@@ -5,6 +5,7 @@ This project is under development.
 A simple web based 3D game build with Three.js and Vite. The game is a simple 3D game where the player can move around in a 3D environment and interact with objects.
 
 ## How to run
+Run `npm install` to install dependencies
 Run `npm run start` in terminal to start the development server
 
 ## Resources
