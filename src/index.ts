@@ -13,7 +13,7 @@ scene.fog = new THREE.Fog( 0xe0e0e0, 20, 100 );
 // add camera
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.y = 5;
-camera.position.z = 5;
+camera.position.z = 10;
 camera.position.x = 0;
 
 // add renderer

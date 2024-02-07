@@ -81,7 +81,7 @@ export class CharacterControls {
             var directionOffset = this.directionOffset(keysPressed)
 
             // rotate model
-            this.rotateQuarternion.setFromAxisAngle(this.rotateAngle, angleYCameraDirection + directionOffset)
+            this.rotateQuarternion.setFromAxisAngle(this.rotateAngle, Math.PI + angleYCameraDirection + directionOffset)
             this.model.quaternion.rotateTowards(this.rotateQuarternion, 0.25)
 
             // calculate direction
