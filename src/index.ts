@@ -4,6 +4,9 @@ import * as THREE from 'three'
 import { CameraHelper } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { generateFloor } from './elements';
+
+// Use generateFloor() wherever needed
 
 // create scene
 const scene = new THREE.Scene();
@@ -26,7 +29,7 @@ renderer.shadowMap.enabled = true
 const orbitControls = new OrbitControls(camera, renderer.domElement);
 orbitControls.enableDamping = true
 orbitControls.minDistance = 5
-orbitControls.maxDistance = 15
+orbitControls.maxDistance = 30
 orbitControls.enablePan = false
 orbitControls.maxPolarAngle = Math.PI / 2 - 0.05
 orbitControls.update();
@@ -35,7 +38,11 @@ orbitControls.update();
 light()
 
 // add floor
-generateFloor()
+const floorGeometry = new THREE.PlaneGeometry( 200, 200 );
+const floorMesh = new THREE.Mesh( floorGeometry, generateFloor() );
+floorMesh.receiveShadow = true;
+floorMesh.rotation.x = - Math.PI / 2.0;
+scene.add( floorMesh );
 
 // add model to scene with animation
 var characterControls: CharacterControls
@@ -96,22 +103,8 @@ function onWindowResize() {
 }
 window.addEventListener('resize', onWindowResize);
 
-function generateFloor() {
-    const mesh = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000 ), new THREE.MeshPhongMaterial( { color: 0xcbcbcb, depthWrite: false } ) );
-    mesh.rotation.x = - Math.PI / 2;
-    scene.add( mesh );
-
-    const grid = new THREE.GridHelper( 200, 40, 0x000000, 0x000000 );
-    scene.add( grid );
-}
-
-function wrapAndRepeatTexture (map: THREE.Texture) {
-    map.wrapS = map.wrapT = THREE.RepeatWrapping
-    map.repeat.x = map.repeat.y = 10
-}
-
 function light() {
-    scene.add(new THREE.AmbientLight(0xffffff, 0.7))
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5))
 
     const dirLight = new THREE.DirectionalLight(0xffffff, 1)
     dirLight.position.set(- 60, 100, - 10);
