@@ -48,6 +48,7 @@ scene.add( floorMesh );
 var characterControls: CharacterControls
 new GLTFLoader().load('models/RobotExpressive.glb', function (gltf) {
     const model = gltf.scene;
+    console.log(gltf.animations)
     model.traverse(function (object: any) {
         if (object.isMesh) object.castShadow = true;
     });
@@ -68,17 +69,37 @@ new GLTFLoader().load('models/RobotExpressive.glb', function (gltf) {
 const keysPressed = {  }
 const keyDisplayQueue = new KeyDisplay();
 document.addEventListener('keydown', (event) => {
-    keyDisplayQueue.down(event.key)
+    if (event.code == "Space") {
+        keyDisplayQueue.down(event.code);
+    } else {
+        keyDisplayQueue.down(event.key);
+    }
     if (event.shiftKey && characterControls) {
         characterControls.switchRunToggle()
+    } else if (event.code === 'Space' && characterControls) {
+        console.log('space pressed')
     } else {
         (keysPressed as any)[event.key.toLowerCase()] = true
     }
 }, false);
 document.addEventListener('keyup', (event) => {
-    keyDisplayQueue.up(event.key);
+    if (event.code == "Space") {
+        keyDisplayQueue.up(event.code);
+    } else {
+        keyDisplayQueue.up(event.key);
+    }
     (keysPressed as any)[event.key.toLowerCase()] = false
 }, false);
+
+// add right click
+document.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+    // punch only if character is in idle position
+    if (characterControls.currentAction == 'Idle') {
+        characterControls.punch()
+    }
+}, false);
+
 
 const clock = new THREE.Clock();
 // animate

@@ -23,6 +23,7 @@ export class CharacterControls {
     
     // constants
     fadeDuration: number = 0.2
+    fadeDurationJump: number = 0.05
     runVelocity = 9
     walkVelocity = 4
 
@@ -46,6 +47,16 @@ export class CharacterControls {
 
     public switchRunToggle() {
         this.toggleRun = !this.toggleRun
+    }
+
+    public punch() {
+        const current = this.animationsMap.get(this.currentAction)
+        // play punch animation
+        const toPlay = this.animationsMap.get('Punch')
+        current.fadeOut(this.fadeDurationJump)
+        const action = toPlay.reset().fadeIn(0.1).play();
+        action.clampWhenFinished = true;
+        action.loop = THREE.LoopOnce;
     }
 
     public update(delta: number, keysPressed: any) {

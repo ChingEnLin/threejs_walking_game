@@ -3,6 +3,7 @@ export const A = 'a'
 export const S = 's'
 export const D = 'd'
 export const SHIFT = 'shift'
+export const SPACE = 'space'
 export const DIRECTIONS = [W, A, S, D]
 
 export class KeyDisplay {
@@ -15,12 +16,14 @@ export class KeyDisplay {
         const s: HTMLButtonElement = document.createElement("button")
         const d: HTMLButtonElement = document.createElement("button")
         const shift: HTMLButtonElement = document.createElement("button")
+        const space: HTMLButtonElement = document.createElement("button")
 
         this.map.set(W, w)
         this.map.set(A, a)
         this.map.set(S, s)
         this.map.set(D, d)
         this.map.set(SHIFT, shift)
+        this.map.set(SPACE, space)
 
         this.map.forEach((v, k) => {
             v.style.color = 'blue'
@@ -48,12 +51,14 @@ export class KeyDisplay {
         this.map.get(S).style.top = `${window.innerHeight - 100}px`
         this.map.get(D).style.top = `${window.innerHeight - 100}px`
         this.map.get(SHIFT).style.top = `${window.innerHeight - 100}px`
+        this.map.get(SPACE).style.top = `${window.innerHeight - 75}px`
 
         this.map.get(W).style.left = `${130}px`
         this.map.get(A).style.left = `${100}px`
         this.map.get(S).style.left = `${130}px`
         this.map.get(D).style.left = `${160}px`
         this.map.get(SHIFT).style.left = `${50}px`
+        this.map.get(SPACE).style.left = `${50}px`
     }
 
     public down (key: string) {
