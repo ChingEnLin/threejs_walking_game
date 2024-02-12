@@ -1,5 +1,6 @@
 import { KeyDisplay } from './utils';
 import { CharacterControls } from './characterControls';
+import { InteractiveVoxelPainter } from './interactive_voxelpainter';
 import * as THREE from 'three'
 import { CameraHelper } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
@@ -16,7 +17,7 @@ scene.fog = new THREE.Fog( 0xe0e0e0, 20, 100 );
 // add camera
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.y = 5;
-camera.position.z = 10;
+camera.position.z = 20;
 camera.position.x = 0;
 
 // add renderer
@@ -29,7 +30,7 @@ renderer.shadowMap.enabled = true
 const orbitControls = new OrbitControls(camera, renderer.domElement);
 orbitControls.enableDamping = true
 orbitControls.minDistance = 5
-orbitControls.maxDistance = 30
+orbitControls.maxDistance = 80
 orbitControls.enablePan = false
 orbitControls.maxPolarAngle = Math.PI / 2 - 0.05
 orbitControls.update();
@@ -48,7 +49,6 @@ scene.add( floorMesh );
 var characterControls: CharacterControls
 new GLTFLoader().load('models/RobotExpressive.glb', function (gltf) {
     const model = gltf.scene;
-    console.log(gltf.animations)
     model.traverse(function (object: any) {
         if (object.isMesh) object.castShadow = true;
     });
@@ -68,10 +68,20 @@ new GLTFLoader().load('models/RobotExpressive.glb', function (gltf) {
 // add control keys
 const keysPressed = {  }
 const keyDisplayQueue = new KeyDisplay();
+var interactiveVoxelPainter: InteractiveVoxelPainter
+var isSpaceDown = false
 document.addEventListener('keydown', (event) => {
     if (event.code == "Space") {
         keyDisplayQueue.down(event.code);
         orbitControls.enabled = false; // Disable orbit controls when space is pressed
+        isSpaceDown = true
+        if (!interactiveVoxelPainter) {
+            interactiveVoxelPainter = new InteractiveVoxelPainter(camera, scene, floorMesh, isSpaceDown)
+            interactiveVoxelPainter.init()
+        }
+        interactiveVoxelPainter.isSpaceDown = isSpaceDown
+        interactiveVoxelPainter.rollOver()
+        document.addEventListener('mousemove', interactiveVoxelPainter.onPointerMove.bind(interactiveVoxelPainter));
     } else if (event.shiftKey && characterControls) {
         characterControls.switchRunToggle();
     } else {
@@ -81,7 +91,11 @@ document.addEventListener('keydown', (event) => {
 document.addEventListener('keyup', (event) => {
     if (event.code == "Space") {
         keyDisplayQueue.up(event.code);
-        orbitControls.enabled = true; // Enable orbit controls when any other key is pressed
+        orbitControls.enabled = true; // Enable orbit controls when space is not pressed
+        isSpaceDown = false
+        interactiveVoxelPainter.isSpaceDown = isSpaceDown
+        document.removeEventListener('mousemove', interactiveVoxelPainter.onPointerMove.bind(interactiveVoxelPainter));
+        interactiveVoxelPainter.rollOver()
     } else {
         keyDisplayQueue.up(event.key);
     }
@@ -97,6 +111,12 @@ document.addEventListener('contextmenu', (event) => {
     }
 }, false);
 
+// add left click
+document.addEventListener('click', (event) => {
+    if (isSpaceDown) {
+        interactiveVoxelPainter.onPointerDown()
+    }
+}, false);
 
 const clock = new THREE.Clock();
 // animate
