@@ -71,20 +71,17 @@ const keyDisplayQueue = new KeyDisplay();
 document.addEventListener('keydown', (event) => {
     if (event.code == "Space") {
         keyDisplayQueue.down(event.code);
+        orbitControls.enabled = false; // Disable orbit controls when space is pressed
+    } else if (event.shiftKey && characterControls) {
+        characterControls.switchRunToggle();
     } else {
-        keyDisplayQueue.down(event.key);
-    }
-    if (event.shiftKey && characterControls) {
-        characterControls.switchRunToggle()
-    } else if (event.code === 'Space' && characterControls) {
-        console.log('space pressed')
-    } else {
-        (keysPressed as any)[event.key.toLowerCase()] = true
+        (keysPressed as any)[event.key.toLowerCase()] = true;
     }
 }, false);
 document.addEventListener('keyup', (event) => {
     if (event.code == "Space") {
         keyDisplayQueue.up(event.code);
+        orbitControls.enabled = true; // Enable orbit controls when any other key is pressed
     } else {
         keyDisplayQueue.up(event.key);
     }
