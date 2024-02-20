@@ -31,12 +31,6 @@ export class InteractiveVoxelPainter {
         this.rollOverMesh = new THREE.Mesh(rollOverGeo, rollOverMaterial);
         this.rollOverMesh.position.set(0, 1.5, 0);
         this.scene.add(this.rollOverMesh);
-
-        // cubes
-        const texture = new THREE.TextureLoader().load( 'textures/crate.gif' );
-        const cubeGeo = new THREE.BoxGeometry(3, 3, 3);
-        const cubeMaterial = new THREE.MeshLambertMaterial( { color: 0xfeb74c, map: texture } );
-        this.voxel = new THREE.Mesh(cubeGeo, cubeMaterial);
     }
 
     public onPointerMove( event: MouseEvent ) {
@@ -55,11 +49,10 @@ export class InteractiveVoxelPainter {
         }
     }
 
+    // return position of rollOverMesh
     public onPointerDown() {
         console.log('onPointerDown')
-        const voxelCopy = this.voxel.clone();
-        voxelCopy.position.copy(this.rollOverMesh.position);
-        this.scene.add(voxelCopy);
+        return this.rollOverMesh.position
     }
 
     public rollOver() {

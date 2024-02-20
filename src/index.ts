@@ -2,12 +2,23 @@ import { KeyDisplay } from './utils';
 import { CharacterControls } from './characterControls';
 import { InteractiveVoxelPainter } from './interactive_voxelpainter';
 import * as THREE from 'three'
+import * as CANNON from 'cannon-es';
 import { CameraHelper } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { generateFloor } from './elements';
 
-// Use generateFloor() wherever needed
+// physics world
+const world = new CANNON.World({gravity: new CANNON.Vec3(0,-9.82, 0)});
+
+// ground body
+const groundBody = new CANNON.Body({
+  type: CANNON.Body.STATIC,
+  shape: new CANNON.Plane(),
+})
+groundBody.position.set(0, 0, 0)
+groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0) // make it face up
+world.addBody(groundBody)
 
 // create scene
 const scene = new THREE.Scene();
@@ -41,6 +52,7 @@ light()
 // add floor
 const floorGeometry = new THREE.PlaneGeometry( 200, 200 );
 const floorMesh = new THREE.Mesh( floorGeometry, generateFloor() );
+floorMesh.position.set(0, 0, 0);
 floorMesh.receiveShadow = true;
 floorMesh.rotation.x = - Math.PI / 2.0;
 scene.add( floorMesh );
@@ -112,9 +124,22 @@ document.addEventListener('contextmenu', (event) => {
 }, false);
 
 // add left click
+const cube = new CANNON.Body({
+    mass: 5, // kg
+    shape: new CANNON.Box(new CANNON.Vec3(1.5,1.5,1.5))
+  })
+const texture = new THREE.TextureLoader().load( 'textures/crate.gif' );
+const cubeGeo = new THREE.BoxGeometry(3, 3, 3);
+const cubeMaterial = new THREE.MeshLambertMaterial( { color: 0xfeb74c, map: texture } );
+const voxel = new THREE.Mesh(cubeGeo, cubeMaterial);
+
 document.addEventListener('click', (event) => {
     if (isSpaceDown) {
-        interactiveVoxelPainter.onPointerDown()
+        const position = interactiveVoxelPainter.onPointerDown()
+        cube.position.set(position.x, position.y+20 , position.z);
+        cube.quaternion.set(Math.PI/4, Math.PI/2, 0, 1);
+        world.addBody(cube);
+        scene.add(voxel);
     }
 }, false);
 
@@ -128,6 +153,10 @@ function animate() {
     orbitControls.update()
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
+
+    voxel.position.copy(cube.position as any);
+    voxel.quaternion.copy(cube.quaternion as any);
+    world.fixedStep();
 }
 document.body.appendChild(renderer.domElement);
 animate();
