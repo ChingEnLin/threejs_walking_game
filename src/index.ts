@@ -59,8 +59,14 @@ scene.add( floorMesh );
 
 // add model to scene with animation
 var characterControls: CharacterControls
+var boundingBox: CANNON.Body
 new GLTFLoader().load('models/RobotExpressive.glb', function (gltf) {
     const model = gltf.scene;
+    boundingBox = new CANNON.Body({
+        mass: 5, // kg
+        shape: new CANNON.Box(new CANNON.Vec3(1, 1.5, 1))
+      })
+    world.addBody(boundingBox);
     model.traverse(function (object: any) {
         if (object.isMesh) object.castShadow = true;
     });
@@ -125,7 +131,7 @@ document.addEventListener('contextmenu', (event) => {
 
 // add left click
 const cube = new CANNON.Body({
-    mass: 5, // kg
+    mass: 50, // kg
     shape: new CANNON.Box(new CANNON.Vec3(1.5,1.5,1.5))
   })
 const texture = new THREE.TextureLoader().load( 'textures/crate.gif' );
@@ -153,6 +159,8 @@ function animate() {
     orbitControls.update()
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
+
+    boundingBox.position.copy(characterControls.model.position as any);
 
     voxel.position.copy(cube.position as any);
     voxel.quaternion.copy(cube.quaternion as any);

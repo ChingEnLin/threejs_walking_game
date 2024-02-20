@@ -51,7 +51,6 @@ export class InteractiveVoxelPainter {
 
     // return position of rollOverMesh
     public onPointerDown() {
-        console.log('onPointerDown')
         return this.rollOverMesh.position
     }
 
